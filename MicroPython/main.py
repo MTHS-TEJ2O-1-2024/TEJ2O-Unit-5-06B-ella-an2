@@ -6,7 +6,6 @@ This module is a Micro:bit MicroPython program
 
 from microbit import *
 
-
 class HCSR04:
     # this class abstracts out the functionality of the HC-SR04 and
     #   returns distance in mm
@@ -29,31 +28,26 @@ class HCSR04:
         spi.write_readinto(resp, resp)
         # find first non zero value
         try:
-            k, value = next(
-                (ind, v) 
-                for ind, v in enumerate(resp[i : length -2])
-                if resp[i + ind + 1 == 0
-            )
-            post = bin(value).count("1") if k else 0
-            k = k + 1
+            i, value = next((ind, v) for ind, v in enumerate(resp) if v)
         except StopIteration:
             i = -1
         if i > 0:
             pre = bin(value).count("1")
             # find first non full high value afterwards
             try:
+                k, value = next((ind, v)
+                                for ind, v in enumerate(resp[i:length - 2]) if resp[i + ind + 1] == 0)
                 post = bin(value).count("1") if k else 0
                 k = k + i
             except StopIteration:
                 i = -1
-        dist= -1 if i < 0 else round(((pre + (k - i) * 8.0 + post) * 8 * 0.172) / 2)
+        dist= -1 if i < 0 else round(((pre + (k - i) * 8. + post) * 8 * 0.172) / 2)
         return dist
 
 
 sonar = HCSR04()
-display.clear()
 display.show(Image.HAPPY)
 
 while True:
-    display.show(sonar.distance_mm() / 10)
+    display.show(sonar.distance_mm()/10)
     sleep(500)
