@@ -53,9 +53,10 @@ class HCSR04:
         return dist
 
 
-sonar = HCSR04()
 display.show(Image.HAPPY)
 
 while True:
-    display.show(sonar.distance_mm() / 10)
-    sleep(500)
+    if button_a.is_pressed():
+        sonar = HCSR04()
+        display.show(sonar.distance_mm())
+        sleep(500)
